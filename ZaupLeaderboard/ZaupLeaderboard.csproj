@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B42E98E0-2252-47BD-9731-F062798AB2BA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ZaupLeaderboard</RootNamespace>
+    <AssemblyName>ZaupLeaderboard</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Unturned_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Unturned_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="I18N">
+      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Servers\testing13\Rocket\Libraries\I18N.dll</HintPath>
+    </Reference>
+    <Reference Include="I18N.West">
+      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Servers\testing13\Rocket\Libraries\I18N.West.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.9.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Servers\testing13\Rocket\Libraries\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Servers\testing13\Rocket\Libraries\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RocketAPI">
+      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Unturned_Data\Managed\RocketAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Uconomy">
+      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Servers\testing13\Rocket\Plugins\Uconomy.dll</HintPath>
+    </Reference>
+    <Reference Include="Uconomy_Essentials">
+      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Servers\testing13\Rocket\Plugins\Uconomy_Essentials.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Unturned_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="Votifier">
+      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Servers\testing13\Rocket\Plugins\Votifier.dll</HintPath>
+    </Reference>
+    <Reference Include="ZaupShop">
+      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Servers\testing13\Rocket\Plugins\ZaupShop.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ZaupLeaderboard.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ZLConfiguration.cs" />
+    <Compile Include="ZLDatabaseManager.cs" />
+    <Compile Include="ZLPlayer.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
