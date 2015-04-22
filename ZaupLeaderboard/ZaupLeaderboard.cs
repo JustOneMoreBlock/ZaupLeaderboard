@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Rocket.RocketAPI;
+using Rocket.Logging;
+using Rocket.RocketAPI.Events;
 
 namespace ZaupLeaderboard
 {
@@ -19,6 +21,16 @@ namespace ZaupLeaderboard
                     + "` set `lastdisconn`=current_timestamp, `timeplayed`=`timeplayed`+ TIMESTAMPDIFF(SECOND,`"
                     + ZaupLeaderboard.Instance.Configuration.DatabaseTableName
                     + "`.`lastconn`,CURRENT_TIMESTAMP())";
+            RocketServerEvents.OnPlayerConnected += this.onPlayerConnected;
+        }
+        private void onPlayerConnected(RocketPlayer player)
+        {
+            byte success = ZaupLeaderboard.Instance.DatabaseMgr.onPlayerConnected(player.CSteamID, player.CharacterName);
+            Logger.Log(success.ToString());
+            if (success <= 0)
+            {
+                Logger.Log("Could not add or update the leaderboard for " + player.CharacterName + ".");
+            }
         }
     }
 }

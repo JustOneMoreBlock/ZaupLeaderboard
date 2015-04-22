@@ -63,14 +63,14 @@ namespace ZaupLeaderboard
                     + "`foundexperience` int(8) UNSIGNED NOT NULL DEFAULT 0, "
                     + "`pvpstreak` int(3) UNSIGNED NOT NULL DEFAULT 0, "
                     + "`toppvpstreak` int(3) UNSIGNED NOT NULL DEFAULT 0, "
-                    + "`serversvotedon` varchar(255) NULL, "
+                    + "`serversvotedon` varchar(255) NOT NULL DEFAULT '', "
                     + "`totalmoneyearned` decimal(15,2) UNSIGNED NOT NULL DEFAULT 0, "
                     + "`totalmoneyspent` decimal(15,2) UNSIGNED NOT NULL DEFAULT 0, "
                     + "`totalmoneylost` decimal(15,2) UNSIGNED NOT NULL DEFAULT 0.00, "
                     + "`totalxpexchanged` int(8) UNSIGNED NOT NULL DEFAULT 0, "
-                    + "`totalitemsbought` int(8) UNSIGNTED NOT NULL DEFAULT 0, "
-                    + "`totalvehiclesbought` int(8) UNSIGNTED NOT NULL DEFAULT 0, "
-                    + "`totalitemsold` int(8) UNSIGNED NOT NULL DEFAULT 0, primary key ('steamId'))";
+                    + "`totalitemsbought` int(8) UNSIGNED NOT NULL DEFAULT 0, "
+                    + "`totalvehiclesbought` int(8) UNSIGNED NOT NULL DEFAULT 0, "
+                    + "`totalitemsold` int(8) UNSIGNED NOT NULL DEFAULT 0, primary key (`steamId`))";
                     mySqlCommand.ExecuteNonQuery();
                 }
                 mySqlConnection.Close();
@@ -110,17 +110,14 @@ namespace ZaupLeaderboard
             {
                 MySqlConnection mySqlConnection = this.createConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
-                mySqlCommand.CommandText = "insert into '"
+                mySqlCommand.CommandText = "insert into `"
                     + ZaupLeaderboard.Instance.Configuration.DatabaseTableName
-                    + "' ('streamId', 'name') VALUES ('"
+                    + "` (`steamId`, `name`) VALUES ('"
                     + id.ToString() + "', '"
-                    + name + "') on duplicate key update `"
-                    + ZaupLeaderboard.Instance.Configuration.DatabaseTableName
-                    + "` set `name`='" 
-                    + name + "', `lastconn`=current_timestamp where `steamId`='" 
-                    + id.ToString() + "'";
+                    + name + "') on duplicate key update `name`='"
+                    + name + "', `lastconn`=current_timestamp";
                 mySqlConnection.Open();
-                byte success = (byte)mySqlCommand.ExecuteScalar();
+                byte success = (byte)mySqlCommand.ExecuteNonQuery();
                 mySqlConnection.Close();
                 return success;
             }
@@ -136,9 +133,9 @@ namespace ZaupLeaderboard
             {
                 MySqlConnection mySqlConnection = this.createConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
-                mySqlCommand.CommandText = String.Format(sql, ZaupLeaderboard.Instance.Configuration.DatabaseTableName);
+                mySqlCommand.CommandText = sql;
                 mySqlConnection.Open();
-                byte success = (byte)mySqlCommand.ExecuteScalar();
+                byte success = (byte)mySqlCommand.ExecuteNonQuery();
                 mySqlConnection.Close();
                 return success;
             }
@@ -154,9 +151,9 @@ namespace ZaupLeaderboard
             {
                 MySqlConnection mySqlConnection = this.createConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
-                mySqlCommand.CommandText = "select `toppvpstreak` from '"
+                mySqlCommand.CommandText = "select `toppvpstreak` from `"
                     + ZaupLeaderboard.Instance.Configuration.DatabaseTableName
-                    + "' where `steamId`='"
+                    + "` where `steamId`='"
                     + id.ToString() + "'";
                 mySqlConnection.Open();
                 uint success = (uint)mySqlCommand.ExecuteScalar();
@@ -167,6 +164,31 @@ namespace ZaupLeaderboard
             {
                 Logger.LogException(ex);
                 return 0;
+            }
+        }
+        public string GetVotes(CSteamID id)
+        {
+            try
+            {
+                MySqlConnection mySqlConnection = this.createConnection();
+                MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
+                mySqlCommand.CommandText = "select `serversvotedon` from `"
+                    + ZaupLeaderboard.Instance.Configuration.DatabaseTableName
+                    + "` where `steamId`='"
+                    + id.ToString() + "'";
+                mySqlConnection.Open();
+                var success = mySqlCommand.ExecuteScalar();
+                if (success == null)
+                {
+                    success = "";
+                }
+                mySqlConnection.Close();
+                return (string) success;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex);
+                return null;
             }
         }
     }
