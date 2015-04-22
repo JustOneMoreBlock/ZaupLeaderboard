@@ -85,7 +85,8 @@ namespace ZaupLeaderboard
             this.UE.OnPlayerPaid += new Uconomy_Essentials.Uconomy_Essentials.PlayerPaidEvent(this.onPlayerPaid);
             this.ZS.OnShopBuy += new UconomyBasicShop.UconomyBasicShop.PlayerShopBuy(this.onShopBuy);
             this.ZS.OnShopSell += new UconomyBasicShop.UconomyBasicShop.PlayerShopSell(this.onShopSell);
-            string votes = ZaupLeaderboard.Instance.DatabaseMgr.GetVotes(this.PlayerInstance.CSteamID);
+            string votes = ZaupLeaderboard.Instance.DatabaseMgr.GetVotes(this.playerid);
+            this.stats["toppvpstreak"] = ZaupLeaderboard.Instance.DatabaseMgr.GetPvpStreak(this.playerid);
             this.serversvotedon = JsonConvert.DeserializeObject<Dictionary<string, uint>>(votes);
             this.lastexperience = this.PlayerInstance.Experience;
         }
@@ -93,20 +94,13 @@ namespace ZaupLeaderboard
         {
             if (player.CSteamID != this.playerid) return;
             string sql = ZaupLeaderboard.Instance.UpdatePlayedTimeSql;
-            uint topstreak = ZaupLeaderboard.Instance.DatabaseMgr.GetPvpStreak(player.CSteamID);
-            uint pvpstreak = this.stats["pvpstreak"];
-            uint toppvpstreak = this.stats["toppvpstreak"];
-            if (pvpstreak > 0 && pvpstreak > toppvpstreak)
-            {
-                this.stats["toppvpstreak"] = pvpstreak;
-                toppvpstreak = pvpstreak;    
-            }
-            if (toppvpstreak > topstreak)
-            {
-                sql += ", `toppvpstreak`=" + toppvpstreak;
-            }
-            // Only keep the last streak.
-            sql += ", `pvpstreak`=" + pvpstreak;
+            uint lasttopstreak = ZaupLeaderboard.Instance.DatabaseMgr.GetPvpStreak(player.CSteamID);
+            if (this.stats["pvpstreak"] > 0 && this.stats["pvpstreak"] > this.stats["toppvpstreak"]) 
+                this.stats["toppvpstreak"] = this.stats["pvpstreak"];
+            if (this.stats["toppvpstreak"] > lasttopstreak)
+                sql += ", `toppvpstreak`=" + this.stats["toppvpstreak"];
+            // Only keep the last and top streak.
+            sql += ", `pvpstreak`=" + this.stats["pvpstreak"];
             string json = JsonConvert.SerializeObject(this.serversvotedon, Formatting.Indented);
             sql += ", `serversvotedon`='" + json + "'";
             // Now loop through the others and add to the sql update.
@@ -130,38 +124,7 @@ namespace ZaupLeaderboard
         {
             if (this.disconnecteddone) return;
             RocketPlayer player = this.PlayerInstance;
-            string sql = ZaupLeaderboard.Instance.UpdatePlayedTimeSql;
-            uint topstreak = ZaupLeaderboard.Instance.DatabaseMgr.GetPvpStreak(player.CSteamID);
-            uint pvpstreak = this.stats["pvpstreak"];
-            uint toppvpstreak = this.stats["toppvpstreak"];
-            if (pvpstreak > 0 && pvpstreak > toppvpstreak)
-            {
-                this.stats["toppvpstreak"] = pvpstreak;
-                toppvpstreak = pvpstreak;
-            }
-            if (toppvpstreak > topstreak)
-            {
-                sql += ", `toppvpstreak`=" + toppvpstreak;
-            }
-            // Only keep the last streak.
-            sql += ", `pvpstreak`=" + pvpstreak;
-            string json = JsonConvert.SerializeObject(this.serversvotedon, Formatting.Indented);
-            sql += ", `serversvotedon`='" + json + "'";
-            // Now loop through the others and add to the sql update.
-            foreach (string s in this.stats.Keys)
-            {
-                sql += ", `" + s + "`=`" + s + "` + " + this.stats[s];
-            }
-            foreach (string s2 in this.money.Keys)
-            {
-                sql += ", `" + s2 + "`=`" + s2 + "` + " + this.money[s2];
-            }
-            sql += " where `steamId`='" + player.CSteamID + "'";
-            byte success = ZaupLeaderboard.Instance.DatabaseMgr.UpdateTable(player.CSteamID, sql);
-            if (success < 1)
-            {
-                Logger.Log("There was problem saving the leaderboard info for " + player.CharacterName + ".");
-            }
+            this.onPlayerDisconnected(player);
         }
         private void onPlayerVoted(RocketPlayer player, ServiceDefinition defintion)
         {
@@ -295,7 +258,6 @@ namespace ZaupLeaderboard
         {
             if (player.CSteamID != this.playerid) return;
             Logger.Log("Player lost money");
-            this.money["totalmoneyearned"] -= amount;
             this.money["totalmoneylost"] += amount;
         }
         private void onPlayerPaid(RocketPlayer player, decimal amount)
@@ -307,6 +269,7 @@ namespace ZaupLeaderboard
         private void onShopBuy(RocketPlayer player, decimal currency, byte amtitems, ushort id, string type)
         {
             if (player.CSteamID != this.playerid) return;
+            Logger.Log("Shop buying called.");
             this.money["totalmoneyspent"] += currency;
             if (type == "vehicle")
             {
@@ -321,6 +284,7 @@ namespace ZaupLeaderboard
         }
         private void onShopSell(RocketPlayer player, decimal currency, byte amtitems, ushort id)
         {
+            Logger.Log("Shop selling called");
             if (player.CSteamID != this.playerid) return;
             Logger.Log("Sold " + amtitems + " of " + id + " for " + currency + " money");
             this.money["totalmoneyearned"] += currency;
