@@ -98,7 +98,9 @@ namespace ZaupLeaderboard
             if (this.stats["pvpstreak"] > 0 && this.stats["pvpstreak"] > this.stats["toppvpstreak"]) 
                 this.stats["toppvpstreak"] = this.stats["pvpstreak"];
             if (this.stats["toppvpstreak"] > lasttopstreak)
+            {
                 sql += ", `toppvpstreak`=" + this.stats["toppvpstreak"];
+            }
             // Only keep the last and top streak.
             sql += ", `pvpstreak`=" + this.stats["pvpstreak"];
             string json = JsonConvert.SerializeObject(this.serversvotedon, Formatting.Indented);
@@ -106,7 +108,8 @@ namespace ZaupLeaderboard
             // Now loop through the others and add to the sql update.
             foreach (string s in this.stats.Keys)
             {
-                sql += ", `" + s + "`=`" + s + "` + " + this.stats[s];
+                if (s != "pvpstreak" && s != "toppvpstreak")
+                    sql += ", `" + s + "`=`" + s + "` + " + this.stats[s];
             }
             foreach (string s2 in this.money.Keys)
             {
@@ -141,19 +144,16 @@ namespace ZaupLeaderboard
         private void onPlayerDeath(RocketPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
         {
             if (player.CSteamID != this.playerid) return;
-            Logger.Log("Checked pvp streaks");
             uint pvpstreak = this.stats["pvpstreak"];
             uint toppvpstreak = this.stats["toppvpstreak"];
             if (pvpstreak > 0)
             {
                 if (pvpstreak > toppvpstreak)
                 {
-                    Logger.Log("New toppvpstreak");
                     this.stats["toppvpstreak"] = pvpstreak;
                 }
                 this.stats["pvpstreak"] = 0;
             }
-            Logger.Log(player.CharacterName + " was " + cause);
             switch(cause) {
                 case EDeathCause.BLEEDING:
                     // Bled to death.
@@ -216,7 +216,6 @@ namespace ZaupLeaderboard
         private void onUpdateStat(RocketPlayer player, EPlayerStat stat)
         {
             if (player.CSteamID != this.playerid) return;
-            Logger.Log(player.CharacterName + " got a " + stat);
             switch(stat) {
                 case EPlayerStat.KILLS_ZOMBIES_NORMAL:
                     this.stats["zombiekills"]++;
@@ -239,7 +238,6 @@ namespace ZaupLeaderboard
         private void onUpdateExperience(RocketPlayer player, uint experience)
         {
             if (player.CSteamID != this.playerid) return;
-            Logger.Log("last experience: " + this.lastexperience.ToString() + " new experience: " + experience.ToString() + " gained: " + (experience - this.lastexperience).ToString());
             if (experience > this.lastexperience)
             {
                 uint gainedexperience = experience - this.lastexperience;
@@ -250,43 +248,35 @@ namespace ZaupLeaderboard
         private void onPlayerExchange(RocketPlayer player, decimal currency, uint experience)
         {
             if (player.CSteamID != this.playerid) return;
-            Logger.Log("Exchanged " + experience.ToString() + " experience for " + currency.ToString() + " money");
             this.money["totalmoneyearned"] += currency;
             this.stats["totalxpexchanged"] += experience;
         }
         private void onPlayerLoss(RocketPlayer player, decimal amount)
         {
             if (player.CSteamID != this.playerid) return;
-            Logger.Log("Player lost money");
-            this.money["totalmoneylost"] += amount;
+            this.money["totalmoneylost"] += amount * -1;
         }
         private void onPlayerPaid(RocketPlayer player, decimal amount)
         {
             if (player.CSteamID != this.playerid) return;
-                Logger.Log("Player paid.");
                 this.money["totalmoneyearned"] += amount;
         }
         private void onShopBuy(RocketPlayer player, decimal currency, byte amtitems, ushort id, string type)
         {
             if (player.CSteamID != this.playerid) return;
-            Logger.Log("Shop buying called.");
             this.money["totalmoneyspent"] += currency;
             if (type == "vehicle")
             {
-                Logger.Log("Vehicle bought for " + currency);
                 this.stats["totalvehiclesbought"] += amtitems;
             }
             else
             {
-                Logger.Log("Item bought for " + currency);
                 this.stats["totalitemsbought"] += amtitems;
             }
         }
         private void onShopSell(RocketPlayer player, decimal currency, byte amtitems, ushort id)
         {
-            Logger.Log("Shop selling called");
             if (player.CSteamID != this.playerid) return;
-            Logger.Log("Sold " + amtitems + " of " + id + " for " + currency + " money");
             this.money["totalmoneyearned"] += currency;
             this.stats["totalitemsold"] += amtitems;
         }
