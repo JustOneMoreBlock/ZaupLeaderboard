@@ -26,7 +26,6 @@ namespace ZaupLeaderboard
         private void onPlayerConnected(RocketPlayer player)
         {
             byte success = ZaupLeaderboard.Instance.DatabaseMgr.onPlayerConnected(player.CSteamID, player.CharacterName);
-            Logger.Log(success.ToString());
             if (success <= 0)
             {
                 Logger.Log("Could not add or update the leaderboard for " + player.CharacterName + ".");
