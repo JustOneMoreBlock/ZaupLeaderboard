@@ -8,8 +8,6 @@ using SDG;
 using UnityEngine;
 using Steamworks;
 using unturned.ROCKS.Votifier;
-//using Uconomy_Essentials;
-//using UconomyBasicShop;
 using Newtonsoft.Json;
 
 

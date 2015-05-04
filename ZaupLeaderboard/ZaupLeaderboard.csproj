@@ -62,18 +62,11 @@
     <Reference Include="Uconomy">
       <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Servers\testing13\Rocket\Plugins\Uconomy.dll</HintPath>
     </Reference>
-    <Reference Include="Uconomy_Essentials, Version=1.1.0.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Servers\testing13\Rocket\Plugins\Uconomy_Essentials.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Unturned_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="Votifier">
       <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Servers\testing13\Rocket\Plugins\Votifier.dll</HintPath>
-    </Reference>
-    <Reference Include="ZaupShop">
-      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Servers\testing13\Rocket\Plugins\ZaupShop.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
