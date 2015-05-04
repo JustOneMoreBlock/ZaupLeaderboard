@@ -8,9 +8,8 @@ using SDG;
 using UnityEngine;
 using Steamworks;
 using unturned.ROCKS.Votifier;
-using unturned.ROCKS.Uconomy;
-using Uconomy_Essentials;
-using UconomyBasicShop;
+//using Uconomy_Essentials;
+//using UconomyBasicShop;
 using Newtonsoft.Json;
 
 
@@ -20,9 +19,6 @@ namespace ZaupLeaderboard
     {
         private RocketPlayerEvents rpe;
         private Votifier Votifier;
-        private Uconomy Uconomy;
-        private Uconomy_Essentials.Uconomy_Essentials UE;
-        private UconomyBasicShop.UconomyBasicShop ZS;
         private Dictionary<string, uint> stats;
         private Dictionary<string, decimal> money;
         private Dictionary<string, uint> serversvotedon = new Dictionary<string, uint>();
@@ -33,9 +29,6 @@ namespace ZaupLeaderboard
         public void Start() {
             this.playerid = this.PlayerInstance.CSteamID;
             this.Votifier = Votifier.Instance;
-            this.Uconomy = Uconomy.Instance;
-            this.UE = Uconomy_Essentials.Uconomy_Essentials.Instance;
-            this.ZS = UconomyBasicShop.UconomyBasicShop.Instance;
             this.rpe = base.gameObject.transform.GetComponent<RocketPlayerEvents>();
             this.stats = new Dictionary<string,uint>{
                 {"zombiekills", 0},
@@ -80,11 +73,6 @@ namespace ZaupLeaderboard
             this.rpe.OnDeath += this.onPlayerDeath;
             this.rpe.OnUpdateStat += this.onUpdateStat;
             this.rpe.OnUpdateExperience += this.onUpdateExperience;
-            this.UE.OnPlayerExchange += new Uconomy_Essentials.Uconomy_Essentials.PlayerExchangeEvent(this.onPlayerExchange);
-            this.UE.OnPlayerLoss += new Uconomy_Essentials.Uconomy_Essentials.PlayerLossEvent(this.onPlayerLoss);
-            this.UE.OnPlayerPaid += new Uconomy_Essentials.Uconomy_Essentials.PlayerPaidEvent(this.onPlayerPaid);
-            this.ZS.OnShopBuy += new UconomyBasicShop.UconomyBasicShop.PlayerShopBuy(this.onShopBuy);
-            this.ZS.OnShopSell += new UconomyBasicShop.UconomyBasicShop.PlayerShopSell(this.onShopSell);
             string votes = ZaupLeaderboard.Instance.DatabaseMgr.GetVotes(this.playerid);
             this.stats["toppvpstreak"] = ZaupLeaderboard.Instance.DatabaseMgr.GetPvpStreak(this.playerid);
             this.serversvotedon = JsonConvert.DeserializeObject<Dictionary<string, uint>>(votes);
@@ -131,13 +119,17 @@ namespace ZaupLeaderboard
         }
         private void onPlayerVoted(RocketPlayer player, ServiceDefinition defintion)
         {
+            Logger.Log("onPlayerVoted called.");
             if (player.CSteamID != this.playerid) return;
+            Logger.Log("checking if key exists");
             if (this.serversvotedon.ContainsKey(defintion.Name))
             {
+                Logger.Log("key exists");
                 this.serversvotedon[defintion.Name]++;
             }
             else
             {
+                Logger.Log("key doesn't exist, adding new");
                 this.serversvotedon.Add(defintion.Name, 1);
             }
         }
@@ -245,21 +237,79 @@ namespace ZaupLeaderboard
             }
             this.lastexperience = experience;
         }
-        private void onPlayerExchange(RocketPlayer player, decimal currency, uint experience)
+        public void UEOnPlayerExchange(object[] vars) {
+            if (vars.Length != 3) return; // This is an invalid send so ignore it.
+            // Correct # of args now see if the player is this one.
+            RocketPlayer player = (RocketPlayer)vars[0];
+            if (player.CSteamID != this.playerid) return; // Not the player, so we are going to ignore the call.
+            decimal currency = (decimal)vars[1];
+            uint experience = (uint)vars[2];
+            string type = (string)vars[3];
+            switch (type)
+            {
+                case "experience":
+                    this.money["totalmoneyearned"] += currency;
+                    this.stats["totalxpexchanged"] += experience;
+                    break;
+                case "money":
+                    this.money["totalmoneyspent"] += currency;
+                    break;
+            }
+            
+        }
+        private void onPlayerExchange(RocketPlayer player, decimal currency, uint experience, string type)
         {
             if (player.CSteamID != this.playerid) return;
             this.money["totalmoneyearned"] += currency;
             this.stats["totalxpexchanged"] += experience;
         }
+        public void UEOnPlayerLoss(object[] vars) {
+             if (vars.Length != 2) return; // This is an invalid send so ignore it.
+            // Correct # of args now see if the player is this one.
+            RocketPlayer player = (RocketPlayer)vars[0];
+            if (player.CSteamID != this.playerid) return; // Not the player, so we are going to ignore the call.
+            decimal amount = (decimal)vars[1];
+            this.money["totalmoneylost"] += amount;
+        }
         private void onPlayerLoss(RocketPlayer player, decimal amount)
         {
             if (player.CSteamID != this.playerid) return;
-            this.money["totalmoneylost"] += amount * -1;
+            this.money["totalmoneylost"] += amount;
+        }
+        public void UEOnPlayerPaid(object[] vars)
+        {
+            if (vars.Length != 2) return; // This is an invalid send so ignore it.
+            // Correct # of args now see if the player is this one.
+            RocketPlayer player = (RocketPlayer)vars[0];
+            if (player.CSteamID != this.playerid) return; // Not the player, so we are going to ignore the call.
+            decimal amount = (decimal)vars[1];
+            this.money["totalmoneyearned"] += amount;
         }
         private void onPlayerPaid(RocketPlayer player, decimal amount)
         {
             if (player.CSteamID != this.playerid) return;
                 this.money["totalmoneyearned"] += amount;
+        }
+        public void ZaupShopOnBuy(object[] vars)
+        {
+            Logger.Log("ZaupShopOnBuy has been called.");
+            if (vars.Length != 5) return; // This is an invalid send so ignore it.
+            // Correct # of args now see if the player is this one.
+            RocketPlayer player = (RocketPlayer)vars[0];
+            if (player.CSteamID != this.playerid) return; // Not the player, so we are going to ignore the call.
+            decimal currency = (decimal)vars[1];
+            byte amtitems = (byte)vars[2];
+            ushort id = (ushort)vars[3];
+            string type = (string)vars[4];
+            this.money["totalmoneyspent"] += currency;
+            if (type == "vehicle")
+            {
+                this.stats["totalvehiclesbought"] += amtitems;
+            }
+            else
+            {
+                this.stats["totalitemsbought"] += amtitems;
+            }
         }
         private void onShopBuy(RocketPlayer player, decimal currency, byte amtitems, ushort id, string type)
         {
@@ -273,6 +323,19 @@ namespace ZaupLeaderboard
             {
                 this.stats["totalitemsbought"] += amtitems;
             }
+        }
+        public void ZaupShopOnSell(object[] vars)
+        {
+            Logger.Log("ZaupShopOnSell has been called.");
+            if (vars.Length != 4) return; // This is an invalid send so ignore it.
+            // Correct # of args now see if the player is this one.
+            RocketPlayer player = (RocketPlayer)vars[0];
+            if (player.CSteamID != this.playerid) return; // Not the player, so we are going to ignore the call.
+            decimal currency = (decimal)vars[1];
+            byte amtitems = (byte)vars[2];
+            ushort id = (ushort)vars[3];
+            this.money["totalmoneyearned"] += currency;
+            this.stats["totalitemsold"] += amtitems;
         }
         private void onShopSell(RocketPlayer player, decimal currency, byte amtitems, ushort id)
         {
