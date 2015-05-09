@@ -4,7 +4,7 @@ using Rocket.RocketAPI;
 
 namespace ZaupLeaderboard
 {
-    public class ZLConfiguration : RocketConfiguration
+    public class ZLConfiguration : IRocketConfiguration
     {
         public string DatabaseAddress;
         public string DatabaseUsername;
@@ -12,7 +12,7 @@ namespace ZaupLeaderboard
         public string DatabaseName;
         public string DatabaseTableName;
         public int DatabasePort;
-        public RocketConfiguration DefaultConfiguration
+        public IRocketConfiguration DefaultConfiguration
         {
             get
             {

@@ -290,7 +290,6 @@ namespace ZaupLeaderboard
         }
         public void ZaupShopOnBuy(object[] vars)
         {
-            Logger.Log("ZaupShopOnBuy has been called.");
             if (vars.Length != 5) return; // This is an invalid send so ignore it.
             // Correct # of args now see if the player is this one.
             RocketPlayer player = (RocketPlayer)vars[0];
@@ -324,7 +323,6 @@ namespace ZaupLeaderboard
         }
         public void ZaupShopOnSell(object[] vars)
         {
-            Logger.Log("ZaupShopOnSell has been called.");
             if (vars.Length != 4) return; // This is an invalid send so ignore it.
             // Correct # of args now see if the player is this one.
             RocketPlayer player = (RocketPlayer)vars[0];
