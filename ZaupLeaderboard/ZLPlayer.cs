@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Rocket.Components;
-using Rocket.RocketAPI.Events;
-using Rocket.RocketAPI;
-using Rocket.Logging;
+using Rocket.Unturned.Player;
+using Rocket.Unturned.Events;
+using Rocket.Unturned.Logging;
 using SDG;
 using UnityEngine;
 using Steamworks;
@@ -25,7 +24,7 @@ namespace ZaupLeaderboard
         private bool disconnecteddone;
 
         public void Start() {
-            this.playerid = this.PlayerInstance.CSteamID;
+            this.playerid = this.Player.CSteamID;
             this.Votifier = Votifier.Instance;
             this.rpe = base.gameObject.transform.GetComponent<RocketPlayerEvents>();
             this.stats = new Dictionary<string,uint>{
@@ -74,7 +73,7 @@ namespace ZaupLeaderboard
             string votes = ZaupLeaderboard.Instance.DatabaseMgr.GetVotes(this.playerid);
             this.stats["toppvpstreak"] = ZaupLeaderboard.Instance.DatabaseMgr.GetPvpStreak(this.playerid);
             this.serversvotedon = JsonConvert.DeserializeObject<Dictionary<string, uint>>(votes);
-            this.lastexperience = this.PlayerInstance.Experience;
+            this.lastexperience = this.Player.Experience;
         }
         private void onPlayerDisconnected(RocketPlayer player)
         {
@@ -112,7 +111,7 @@ namespace ZaupLeaderboard
         private void onServerShutdown()
         {
             if (this.disconnecteddone) return;
-            RocketPlayer player = this.PlayerInstance;
+            RocketPlayer player = this.Player;
             this.onPlayerDisconnected(player);
         }
         private void onPlayerVoted(RocketPlayer player, ServiceDefinition defintion)

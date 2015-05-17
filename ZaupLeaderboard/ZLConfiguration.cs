@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Rocket.RocketAPI;
+using Rocket.API;
 
 namespace ZaupLeaderboard
 {
-    public class ZLConfiguration : IRocketConfiguration
+    public class ZLConfiguration : IRocketPluginConfiguration
     {
         public string DatabaseAddress;
         public string DatabaseUsername;
@@ -12,7 +12,7 @@ namespace ZaupLeaderboard
         public string DatabaseName;
         public string DatabaseTableName;
         public int DatabasePort;
-        public IRocketConfiguration DefaultConfiguration
+        public IRocketPluginConfiguration DefaultConfiguration
         {
             get
             {

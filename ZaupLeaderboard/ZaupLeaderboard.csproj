@@ -49,8 +49,14 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Servers\testing13\Rocket\Libraries\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="RocketAPI">
-      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Unturned_Data\Managed\RocketAPI.dll</HintPath>
+    <Reference Include="Rocket.API">
+      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Unturned_Data\Managed\Rocket.API.dll</HintPath>
+    </Reference>
+    <Reference Include="Rocket.Core">
+      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Unturned_Data\Managed\Rocket.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Rocket.Unturned">
+      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Unturned_Data\Managed\Rocket.Unturned.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

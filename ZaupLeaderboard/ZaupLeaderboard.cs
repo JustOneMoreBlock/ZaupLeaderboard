@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Rocket.RocketAPI;
-using Rocket.Logging;
-using Rocket.RocketAPI.Events;
+using Rocket.API;
+using Rocket.Unturned.Logging;
+using Rocket.Unturned.Events;
+using Rocket.Unturned.Player;
+using Rocket.Unturned.Plugins;
 
 namespace ZaupLeaderboard
 {
