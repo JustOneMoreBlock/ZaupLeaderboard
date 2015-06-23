@@ -31,32 +31,44 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Unturned_Data\Managed\Assembly-CSharp.dll</HintPath>
+	  <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Assembly-CSharp.dll</HintPath>
+	  <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Unturned_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+	  <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Assembly-CSharp-firstpass.dll</HintPath>
+	  <Private>False</Private>
     </Reference>
     <Reference Include="I18N">
-      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Servers\testing13\Rocket\Libraries\I18N.dll</HintPath>
+	  <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\I18N.dll</HintPath>
     </Reference>
     <Reference Include="I18N.West">
-      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Servers\testing13\Rocket\Libraries\I18N.West.dll</HintPath>
+	  <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\I18N.West.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=6.9.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Servers\testing13\Rocket\Libraries\MySql.Data.dll</HintPath>
+      <HintPath>Libraries\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Servers\testing13\Rocket\Libraries\Newtonsoft.Json.dll</HintPath>
+      <HintPath>Libraries\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Rocket.API">
-      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Unturned_Data\Managed\Rocket.API.dll</HintPath>
+	  <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Rocket.API.dll</HintPath>
+	  <Private>False</Private>
     </Reference>
     <Reference Include="Rocket.Core">
-      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Unturned_Data\Managed\Rocket.Core.dll</HintPath>
+	  <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Rocket.Core.dll</HintPath>
+	  <Private>False</Private>
     </Reference>
     <Reference Include="Rocket.Unturned">
-      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Unturned_Data\Managed\Rocket.Unturned.dll</HintPath>
+	  <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Rocket.Unturned.dll</HintPath>
+	  <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -66,13 +78,19 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Uconomy">
-      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Servers\testing13\Rocket\Plugins\Uconomy.dll</HintPath>
+	  <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Uconomy.dll</HintPath>
+	  <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Unturned_Data\Managed\UnityEngine.dll</HintPath>
+	  <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\UnityEngine.dll</HintPath>
+	  <Private>False</Private>
     </Reference>
     <Reference Include="Votifier">
-      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Servers\testing13\Rocket\Plugins\Votifier.dll</HintPath>
+	  <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Votifier.dll</HintPath>
+	  <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -81,6 +99,26 @@
     <Compile Include="ZLConfiguration.cs" />
     <Compile Include="ZLDatabaseManager.cs" />
     <Compile Include="ZLPlayer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Libraries\I18N.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Libraries\I18N.West.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Libraries\MySql.Data.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Libraries\System.Data.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Libraries\System.Management.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Libraries\System.Transactions.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Rocket.Unturned.Player;
 using Rocket.Unturned.Events;
 using Rocket.Unturned.Logging;
-using SDG;
+using SDG.Unturned;
 using UnityEngine;
 using Steamworks;
 using unturned.ROCKS.Votifier;
@@ -254,23 +254,12 @@ namespace ZaupLeaderboard
             }
             
         }
-        private void onPlayerExchange(RocketPlayer player, decimal currency, uint experience, string type)
-        {
-            if (player.CSteamID != this.playerid) return;
-            this.money["totalmoneyearned"] += currency;
-            this.stats["totalxpexchanged"] += experience;
-        }
         public void UEOnPlayerLoss(object[] vars) {
              if (vars.Length != 2) return; // This is an invalid send so ignore it.
             // Correct # of args now see if the player is this one.
             RocketPlayer player = (RocketPlayer)vars[0];
             if (player.CSteamID != this.playerid) return; // Not the player, so we are going to ignore the call.
             decimal amount = (decimal)vars[1];
-            this.money["totalmoneylost"] += amount;
-        }
-        private void onPlayerLoss(RocketPlayer player, decimal amount)
-        {
-            if (player.CSteamID != this.playerid) return;
             this.money["totalmoneylost"] += amount;
         }
         public void UEOnPlayerPaid(object[] vars)
@@ -281,11 +270,6 @@ namespace ZaupLeaderboard
             if (player.CSteamID != this.playerid) return; // Not the player, so we are going to ignore the call.
             decimal amount = (decimal)vars[1];
             this.money["totalmoneyearned"] += amount;
-        }
-        private void onPlayerPaid(RocketPlayer player, decimal amount)
-        {
-            if (player.CSteamID != this.playerid) return;
-                this.money["totalmoneyearned"] += amount;
         }
         public void ZaupShopOnBuy(object[] vars)
         {
@@ -307,19 +291,6 @@ namespace ZaupLeaderboard
                 this.stats["totalitemsbought"] += amtitems;
             }
         }
-        private void onShopBuy(RocketPlayer player, decimal currency, byte amtitems, ushort id, string type)
-        {
-            if (player.CSteamID != this.playerid) return;
-            this.money["totalmoneyspent"] += currency;
-            if (type == "vehicle")
-            {
-                this.stats["totalvehiclesbought"] += amtitems;
-            }
-            else
-            {
-                this.stats["totalitemsbought"] += amtitems;
-            }
-        }
         public void ZaupShopOnSell(object[] vars)
         {
             if (vars.Length != 4) return; // This is an invalid send so ignore it.
@@ -329,12 +300,6 @@ namespace ZaupLeaderboard
             decimal currency = (decimal)vars[1];
             byte amtitems = (byte)vars[2];
             ushort id = (ushort)vars[3];
-            this.money["totalmoneyearned"] += currency;
-            this.stats["totalitemsold"] += amtitems;
-        }
-        private void onShopSell(RocketPlayer player, decimal currency, byte amtitems, ushort id)
-        {
-            if (player.CSteamID != this.playerid) return;
             this.money["totalmoneyearned"] += currency;
             this.stats["totalitemsold"] += amtitems;
         }
