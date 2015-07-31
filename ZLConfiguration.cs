@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using Rocket.API;
 
 namespace ZaupLeaderboard
@@ -12,20 +13,14 @@ namespace ZaupLeaderboard
         public string DatabaseName;
         public string DatabaseTableName;
         public int DatabasePort;
-        public IRocketPluginConfiguration DefaultConfiguration
+        public void LoadDefaults()
         {
-            get
-            {
-                return new ZLConfiguration
-                {
-                    DatabaseAddress = "localhost",
-                    DatabaseUsername = "unturned",
-                    DatabasePassword = "password",
-                    DatabaseName = "unturned",
-                    DatabaseTableName = "leaderboard",
-                    DatabasePort = 3306
-                };
-            }
+            DatabaseAddress = "localhost";
+            DatabaseUsername = "unturned";
+            DatabasePassword = "password";
+            DatabaseName = "unturned";
+            DatabaseTableName = "leaderboard";
+            DatabasePort = 3306;
         }
     }
 }

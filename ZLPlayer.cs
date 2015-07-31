@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using Rocket.Unturned.Player;
+
+using Rocket.Core.Logging;
+using Rocket.Unturned;
 using Rocket.Unturned.Events;
-using Rocket.Unturned.Logging;
+using Rocket.Unturned.Player;
 using SDG.Unturned;
 using UnityEngine;
 using Steamworks;
-using unturned.ROCKS.Votifier;
-using Newtonsoft.Json;
 
 
 namespace ZaupLeaderboard
 {
-    public class ZLPlayer : RocketPlayerComponent
+    public class ZLPlayer : UnturnedPlayerComponent
     {
-        private RocketPlayerEvents rpe;
-        private Votifier Votifier;
+        private UnturnedPlayerEvents rpe;
         private Dictionary<string, uint> stats;
         private Dictionary<string, decimal> money;
         private Dictionary<string, uint> serversvotedon = new Dictionary<string, uint>();
@@ -25,8 +24,7 @@ namespace ZaupLeaderboard
 
         public void Start() {
             this.playerid = this.Player.CSteamID;
-            this.Votifier = Votifier.Instance;
-            this.rpe = base.gameObject.transform.GetComponent<RocketPlayerEvents>();
+            this.rpe = base.gameObject.transform.GetComponent<UnturnedPlayerEvents>();
             this.stats = new Dictionary<string,uint>{
                 {"zombiekills", 0},
                 {"zombiekillsmega", 0},
@@ -64,18 +62,15 @@ namespace ZaupLeaderboard
                 {"totalmoneyspent", 0.00m},
                 {"totalmoneylost", 0.00m}
             };
-            RocketServerEvents.OnPlayerDisconnected += this.onPlayerDisconnected;
-            RocketServerEvents.OnServerShutdown += this.onServerShutdown;
-            this.Votifier.OnPlayerVoted += this.onPlayerVoted;
+            U.Events.OnPlayerDisconnected += this.onPlayerDisconnected;
+            U.Events.OnShutdown += this.onServerShutdown;
             this.rpe.OnDeath += this.onPlayerDeath;
             this.rpe.OnUpdateStat += this.onUpdateStat;
             this.rpe.OnUpdateExperience += this.onUpdateExperience;
-            string votes = ZaupLeaderboard.Instance.DatabaseMgr.GetVotes(this.playerid);
             this.stats["toppvpstreak"] = ZaupLeaderboard.Instance.DatabaseMgr.GetPvpStreak(this.playerid);
-            this.serversvotedon = JsonConvert.DeserializeObject<Dictionary<string, uint>>(votes);
             this.lastexperience = this.Player.Experience;
         }
-        private void onPlayerDisconnected(RocketPlayer player)
+        private void onPlayerDisconnected(UnturnedPlayer player)
         {
             if (player.CSteamID != this.playerid) return;
             string sql = ZaupLeaderboard.Instance.UpdatePlayedTimeSql;
@@ -88,8 +83,7 @@ namespace ZaupLeaderboard
             }
             // Only keep the last and top streak.
             sql += ", `pvpstreak`=" + this.stats["pvpstreak"];
-            string json = JsonConvert.SerializeObject(this.serversvotedon, Formatting.Indented);
-            sql += ", `serversvotedon`='" + json + "'";
+            sql += ", `serversvotedon`=''";
             // Now loop through the others and add to the sql update.
             foreach (string s in this.stats.Keys)
             {
@@ -111,26 +105,10 @@ namespace ZaupLeaderboard
         private void onServerShutdown()
         {
             if (this.disconnecteddone) return;
-            RocketPlayer player = this.Player;
+            UnturnedPlayer player = this.Player;
             this.onPlayerDisconnected(player);
         }
-        private void onPlayerVoted(RocketPlayer player, ServiceDefinition defintion)
-        {
-            Logger.Log("onPlayerVoted called.");
-            if (player.CSteamID != this.playerid) return;
-            Logger.Log("checking if key exists");
-            if (this.serversvotedon.ContainsKey(defintion.Name))
-            {
-                Logger.Log("key exists");
-                this.serversvotedon[defintion.Name]++;
-            }
-            else
-            {
-                Logger.Log("key doesn't exist, adding new");
-                this.serversvotedon.Add(defintion.Name, 1);
-            }
-        }
-        private void onPlayerDeath(RocketPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
+        private void onPlayerDeath(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
         {
             if (player.CSteamID != this.playerid) return;
             uint pvpstreak = this.stats["pvpstreak"];
@@ -202,7 +180,7 @@ namespace ZaupLeaderboard
                     break;
             }
         }
-        private void onUpdateStat(RocketPlayer player, EPlayerStat stat)
+        private void onUpdateStat(UnturnedPlayer player, EPlayerStat stat)
         {
             if (player.CSteamID != this.playerid) return;
             switch(stat) {
@@ -224,7 +202,7 @@ namespace ZaupLeaderboard
                     break;
             }
         }
-        private void onUpdateExperience(RocketPlayer player, uint experience)
+        private void onUpdateExperience(UnturnedPlayer player, uint experience)
         {
             if (player.CSteamID != this.playerid) return;
             if (experience > this.lastexperience)
@@ -237,7 +215,7 @@ namespace ZaupLeaderboard
         public void UEOnPlayerExchange(object[] vars) {
             if (vars.Length != 3) return; // This is an invalid send so ignore it.
             // Correct # of args now see if the player is this one.
-            RocketPlayer player = (RocketPlayer)vars[0];
+            UnturnedPlayer player = (UnturnedPlayer)vars[0];
             if (player.CSteamID != this.playerid) return; // Not the player, so we are going to ignore the call.
             decimal currency = (decimal)vars[1];
             uint experience = (uint)vars[2];
@@ -257,7 +235,7 @@ namespace ZaupLeaderboard
         public void UEOnPlayerLoss(object[] vars) {
              if (vars.Length != 2) return; // This is an invalid send so ignore it.
             // Correct # of args now see if the player is this one.
-            RocketPlayer player = (RocketPlayer)vars[0];
+            UnturnedPlayer player = (UnturnedPlayer)vars[0];
             if (player.CSteamID != this.playerid) return; // Not the player, so we are going to ignore the call.
             decimal amount = (decimal)vars[1];
             this.money["totalmoneylost"] += amount;
@@ -266,7 +244,7 @@ namespace ZaupLeaderboard
         {
             if (vars.Length != 2) return; // This is an invalid send so ignore it.
             // Correct # of args now see if the player is this one.
-            RocketPlayer player = (RocketPlayer)vars[0];
+            UnturnedPlayer player = (UnturnedPlayer)vars[0];
             if (player.CSteamID != this.playerid) return; // Not the player, so we are going to ignore the call.
             decimal amount = (decimal)vars[1];
             this.money["totalmoneyearned"] += amount;
@@ -275,7 +253,7 @@ namespace ZaupLeaderboard
         {
             if (vars.Length != 5) return; // This is an invalid send so ignore it.
             // Correct # of args now see if the player is this one.
-            RocketPlayer player = (RocketPlayer)vars[0];
+            UnturnedPlayer player = (UnturnedPlayer)vars[0];
             if (player.CSteamID != this.playerid) return; // Not the player, so we are going to ignore the call.
             decimal currency = (decimal)vars[1];
             byte amtitems = (byte)vars[2];
@@ -295,7 +273,7 @@ namespace ZaupLeaderboard
         {
             if (vars.Length != 4) return; // This is an invalid send so ignore it.
             // Correct # of args now see if the player is this one.
-            RocketPlayer player = (RocketPlayer)vars[0];
+            UnturnedPlayer player = (UnturnedPlayer)vars[0];
             if (player.CSteamID != this.playerid) return; // Not the player, so we are going to ignore the call.
             decimal currency = (decimal)vars[1];
             byte amtitems = (byte)vars[2];
