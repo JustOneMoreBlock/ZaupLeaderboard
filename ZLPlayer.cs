@@ -99,7 +99,7 @@ namespace ZaupLeaderboard
             this.disconnecteddone = true;
             if (success < 1)
             {
-                Logger.Log("There was problem saving the leaderboard info for " + player.CharacterName + ".");
+                Rocket.Core.Logging.Logger.Log("There was problem saving the leaderboard info for " + player.CharacterName + ".");
             }
         }
         private void onServerShutdown()
