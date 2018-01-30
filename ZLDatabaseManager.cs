@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using I18N.West;
 using MySql.Data.MySqlClient;
-
 using Rocket.Core.Logging;
 using Steamworks;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ZaupLeaderboard
 {

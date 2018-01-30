@@ -179,7 +179,7 @@ namespace ZaupLeaderboard
                     this.stats["killedbyshred"]++;
                     break;
             }
-            ZaupLeaderboard.Instance.OnChangeStatsEvent?.Invoke(Player.CSteamID, cause.ToString());
+            ZaupLeaderboard.Instance.OnUpdateStats(Player.CSteamID, cause.ToString());
         }
         private void OnUpdateStat(UnturnedPlayer player, EPlayerStat stat)
         {
@@ -202,7 +202,7 @@ namespace ZaupLeaderboard
                     this.stats["foundresources"]++;
                     break;
             }
-            ZaupLeaderboard.Instance.OnChangeStatsEvent?.Invoke(Player.CSteamID, stat.ToString());
+            ZaupLeaderboard.Instance.OnUpdateStats(Player.CSteamID, stat.ToString());
         }
         private void OnUpdateExperience(UnturnedPlayer player, uint experience)
         {
@@ -213,7 +213,7 @@ namespace ZaupLeaderboard
                 this.stats["foundexperience"] += gainedexperience;
             }
             this.lastexperience = experience;
-            ZaupLeaderboard.Instance.OnChangeStatsEvent?.Invoke(Player.CSteamID, "experience");
+            ZaupLeaderboard.Instance.OnUpdateStats(Player.CSteamID, "experience");
         }
         public void UEOnPlayerExchange(object[] vars) {
             if (vars.Length != 3) return; // This is an invalid send so ignore it.

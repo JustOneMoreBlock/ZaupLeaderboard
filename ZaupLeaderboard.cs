@@ -19,7 +19,7 @@ namespace ZaupLeaderboard
         public ZLDatabaseManager DatabaseMgr;
         public string UpdatePlayedTimeSql;
         public delegate void OnChangeStats(CSteamID steamID, string WhichStat);
-        public OnChangeStats OnChangeStatsEvent;
+        public event OnChangeStats OnChangeStatsEvent;
 
         protected override void Load()
         {
@@ -31,6 +31,14 @@ namespace ZaupLeaderboard
                     + ZaupLeaderboard.Instance.Configuration.Instance.DatabaseTableName
                     + "`.`lastconn`,CURRENT_TIMESTAMP())";
             U.Events.OnPlayerConnected += this.OnPlayerConnected;
+        }
+
+        internal void OnUpdateStats(CSteamID steamID, string WhichStat)
+        {
+            if(OnChangeStatsEvent != null)
+            {
+                OnChangeStatsEvent(steamID, WhichStat);
+            }
         }
 
         private void OnPlayerConnected(UnturnedPlayer player)
