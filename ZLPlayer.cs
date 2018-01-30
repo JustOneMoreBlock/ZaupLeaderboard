@@ -15,7 +15,7 @@ namespace ZaupLeaderboard
     public class ZLPlayer : UnturnedPlayerComponent
     {
         private UnturnedPlayerEvents rpe;
-        private Dictionary<string, uint> stats;
+        public Dictionary<string, uint> stats;
         private Dictionary<string, decimal> money;
         private Dictionary<string, uint> serversvotedon = new Dictionary<string, uint>();
         private uint lastexperience;
@@ -62,15 +62,15 @@ namespace ZaupLeaderboard
                 {"totalmoneyspent", 0.00m},
                 {"totalmoneylost", 0.00m}
             };
-            U.Events.OnPlayerDisconnected += this.onPlayerDisconnected;
-            U.Events.OnShutdown += this.onServerShutdown;
-            this.rpe.OnDeath += this.onPlayerDeath;
-            this.rpe.OnUpdateStat += this.onUpdateStat;
-            this.rpe.OnUpdateExperience += this.onUpdateExperience;
+            U.Events.OnPlayerDisconnected += this.OnPlayerDisconnected;
+            U.Events.OnShutdown += this.OnServerShutdown;
+            this.rpe.OnDeath += this.OnPlayerDeath;
+            this.rpe.OnUpdateStat += this.OnUpdateStat;
+            this.rpe.OnUpdateExperience += this.OnUpdateExperience;
             this.stats["toppvpstreak"] = ZaupLeaderboard.Instance.DatabaseMgr.GetPvpStreak(this.playerid);
             this.lastexperience = this.Player.Experience;
         }
-        private void onPlayerDisconnected(UnturnedPlayer player)
+        private void OnPlayerDisconnected(UnturnedPlayer player)
         {
             if (player.CSteamID != this.playerid) return;
             string sql = ZaupLeaderboard.Instance.UpdatePlayedTimeSql;
@@ -102,13 +102,13 @@ namespace ZaupLeaderboard
                 Rocket.Core.Logging.Logger.Log("There was problem saving the leaderboard info for " + player.CharacterName + ".");
             }
         }
-        private void onServerShutdown()
+        private void OnServerShutdown()
         {
             if (this.disconnecteddone) return;
             UnturnedPlayer player = this.Player;
-            this.onPlayerDisconnected(player);
+            this.OnPlayerDisconnected(player);
         }
-        private void onPlayerDeath(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
+        private void OnPlayerDeath(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
         {
             if (player.CSteamID != this.playerid) return;
             uint pvpstreak = this.stats["pvpstreak"];
@@ -179,8 +179,9 @@ namespace ZaupLeaderboard
                     this.stats["killedbyshred"]++;
                     break;
             }
+            ZaupLeaderboard.Instance.OnChangeStatsEvent?.Invoke(Player.CSteamID, cause.ToString());
         }
-        private void onUpdateStat(UnturnedPlayer player, EPlayerStat stat)
+        private void OnUpdateStat(UnturnedPlayer player, EPlayerStat stat)
         {
             if (player.CSteamID != this.playerid) return;
             switch(stat) {
@@ -201,8 +202,9 @@ namespace ZaupLeaderboard
                     this.stats["foundresources"]++;
                     break;
             }
+            ZaupLeaderboard.Instance.OnChangeStatsEvent?.Invoke(Player.CSteamID, stat.ToString());
         }
-        private void onUpdateExperience(UnturnedPlayer player, uint experience)
+        private void OnUpdateExperience(UnturnedPlayer player, uint experience)
         {
             if (player.CSteamID != this.playerid) return;
             if (experience > this.lastexperience)
@@ -211,6 +213,7 @@ namespace ZaupLeaderboard
                 this.stats["foundexperience"] += gainedexperience;
             }
             this.lastexperience = experience;
+            ZaupLeaderboard.Instance.OnChangeStatsEvent?.Invoke(Player.CSteamID, "experience");
         }
         public void UEOnPlayerExchange(object[] vars) {
             if (vars.Length != 3) return; // This is an invalid send so ignore it.

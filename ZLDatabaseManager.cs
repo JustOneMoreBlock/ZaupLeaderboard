@@ -22,7 +22,7 @@ namespace ZaupLeaderboard
         {
             try
             {
-                MySqlConnection mySqlConnection = this.createConnection();
+                MySqlConnection mySqlConnection = this.CreateConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
                 mySqlCommand.CommandText = "show tables like '"
                     + ZaupLeaderboard.Instance.Configuration.Instance.DatabaseTableName + "'";
@@ -80,7 +80,7 @@ namespace ZaupLeaderboard
                 Logger.LogException(ex);
             }
         }
-        private MySqlConnection createConnection()
+        private MySqlConnection CreateConnection()
 		{
 			MySqlConnection result = null;
 			try
@@ -104,11 +104,11 @@ namespace ZaupLeaderboard
 			}
 			return result;
 		}
-        public byte onPlayerConnected(CSteamID id, string name)
+        public byte OnPlayerConnected(CSteamID id, string name)
         {
             try
             {
-                MySqlConnection mySqlConnection = this.createConnection();
+                MySqlConnection mySqlConnection = this.CreateConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
                 mySqlCommand.CommandText = "insert into `"
                     + ZaupLeaderboard.Instance.Configuration.Instance.DatabaseTableName
@@ -127,11 +127,105 @@ namespace ZaupLeaderboard
                 return 0;
             }
         }
+
+        public int GetPlayerKills(string id)
+        {
+            int result = 0;
+            try
+            {
+                MySqlConnection mySqlConnection = this.CreateConnection();
+                MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
+                string databaseTableName = ZaupLeaderboard.Instance.Configuration.Instance.DatabaseTableName;
+                mySqlCommand.CommandText = string.Concat(new string[]
+                {
+                    "select `playerkills` from `",
+                    databaseTableName,
+                    "` where `steamId` = '",
+                    id,
+                    "'"
+                });
+                mySqlConnection.Open();
+                object obj = mySqlCommand.ExecuteScalar();
+                if (obj != null)
+                {
+                    int.TryParse(obj.ToString(), out result);
+                }
+                mySqlConnection.Close();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex, null);
+            }
+            return result;
+        }
+
+        public int GetZombieKills(string id)
+        {
+            int result = 0;
+            try
+            {
+                MySqlConnection mySqlConnection = this.CreateConnection();
+                MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
+                string databaseTableName = ZaupLeaderboard.Instance.Configuration.Instance.DatabaseTableName;
+                mySqlCommand.CommandText = string.Concat(new string[]
+                {
+                    "select `zombiekills` from `",
+                    databaseTableName,
+                    "` where `steamId` = '",
+                    id,
+                    "'"
+                });
+                mySqlConnection.Open();
+                object obj = mySqlCommand.ExecuteScalar();
+                if (obj != null)
+                {
+                    int.TryParse(obj.ToString(), out result);
+                }
+                mySqlConnection.Close();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex, null);
+            }
+            return result;
+        }
+
+        public int GetZombieMegaKills(string id)
+        {
+            int result = 0;
+            try
+            {
+                MySqlConnection mySqlConnection = this.CreateConnection();
+                MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
+                string databaseTableName = ZaupLeaderboard.Instance.Configuration.Instance.DatabaseTableName;
+                mySqlCommand.CommandText = string.Concat(new string[]
+                {
+                    "select `zombiekillsmega` from `",
+                    databaseTableName,
+                    "` where `steamId` = '",
+                    id,
+                    "'"
+                });
+                mySqlConnection.Open();
+                object obj = mySqlCommand.ExecuteScalar();
+                if (obj != null)
+                {
+                    int.TryParse(obj.ToString(), out result);
+                }
+                mySqlConnection.Close();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex, null);
+            }
+            return result;
+        }
+
         public byte UpdateTable(CSteamID id, string sql)
         {
             try
             {
-                MySqlConnection mySqlConnection = this.createConnection();
+                MySqlConnection mySqlConnection = this.CreateConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
                 mySqlCommand.CommandText = sql;
                 mySqlConnection.Open();
@@ -149,7 +243,7 @@ namespace ZaupLeaderboard
         {
             try
             {
-                MySqlConnection mySqlConnection = this.createConnection();
+                MySqlConnection mySqlConnection = this.CreateConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
                 mySqlCommand.CommandText = "select `toppvpstreak` from `"
                     + ZaupLeaderboard.Instance.Configuration.Instance.DatabaseTableName
