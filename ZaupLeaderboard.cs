@@ -8,6 +8,8 @@ using Rocket.Unturned;
 using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
 using Rocket.Unturned.Plugins;
+using Steamworks;
+using SDG.Unturned;
 
 namespace ZaupLeaderboard
 {
@@ -16,6 +18,8 @@ namespace ZaupLeaderboard
         public static ZaupLeaderboard Instance;
         public ZLDatabaseManager DatabaseMgr;
         public string UpdatePlayedTimeSql;
+        public delegate void OnChangeStats(CSteamID steamID, string WhichStat);
+        public event OnChangeStats OnChangeStatsEvent;
 
         protected override void Load()
         {
@@ -26,11 +30,20 @@ namespace ZaupLeaderboard
                     + "` set `lastdisconn`=current_timestamp, `timeplayed`=`timeplayed`+ TIMESTAMPDIFF(SECOND,`"
                     + ZaupLeaderboard.Instance.Configuration.Instance.DatabaseTableName
                     + "`.`lastconn`,CURRENT_TIMESTAMP())";
-            U.Events.OnPlayerConnected += this.onPlayerConnected;
+            U.Events.OnPlayerConnected += this.OnPlayerConnected;
         }
-        private void onPlayerConnected(UnturnedPlayer player)
+
+        internal void OnUpdateStats(CSteamID steamID, string WhichStat)
         {
-            byte success = ZaupLeaderboard.Instance.DatabaseMgr.onPlayerConnected(player.CSteamID, player.CharacterName);
+            if(OnChangeStatsEvent != null)
+            {
+                OnChangeStatsEvent(steamID, WhichStat);
+            }
+        }
+
+        private void OnPlayerConnected(UnturnedPlayer player)
+        {
+            byte success = ZaupLeaderboard.Instance.DatabaseMgr.OnPlayerConnected(player.CSteamID, player.CharacterName);
             if (success <= 0)
             {
                 Logger.Log("Could not add or update the leaderboard for " + player.CharacterName + ".");
